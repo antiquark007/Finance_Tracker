@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { TransactionProvider, useTransactions } from '@/context/TransactionContext';
 import { TransactionDialog } from '@/components/TransactionDialog';
