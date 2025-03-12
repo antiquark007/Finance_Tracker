@@ -125,56 +125,64 @@ function getSampleTransactions(): Transaction[] {
       amount: 2500,
       description: "Salary",
       date: new Date(today.getFullYear(), today.getMonth(), 5),
-      type: "income"
+      type: "income",
+      category:"salary"
     },
     {
       id: uuidv4(),
       amount: 120.50,
       description: "Grocery shopping",
       date: new Date(today.getFullYear(), today.getMonth(), 12),
-      type: "expense"
+      type: "expense",
+      category:"food"
     },
     {
       id: uuidv4(),
       amount: 45.99,
       description: "Internet bill",
       date: new Date(today.getFullYear(), today.getMonth(), 15),
-      type: "expense"
+      type: "expense",
+      category:"entertainment"
     },
     {
       id: uuidv4(),
       amount: 800,
       description: "Rent",
       date: new Date(today.getFullYear(), today.getMonth(), 1),
-      type: "expense"
+      type: "expense",
+      category:"housing"
     },
     {
       id: uuidv4(),
       amount: 56.28,
       description: "Gas",
       date: new Date(today.getFullYear(), today.getMonth(), 18),
-      type: "expense"
+      type: "expense",
+      category:"transportation"
     },
     {
       id: uuidv4(),
       amount: 500,
       description: "Freelance work",
       date: new Date(today.getFullYear(), today.getMonth(), 22),
-      type: "income"
+      type: "income",
+      category:"freelance"
     },
     {
       id: uuidv4(),
       amount: 2500,
       description: "Salary",
       date: new Date(oneMonthAgo.getFullYear(), oneMonthAgo.getMonth(), 5),
-      type: "income"
+      type: "income",
+      category:"salary"
     },
     {
       id: uuidv4(),
       amount: 350,
       description: "Car repair",
       date: new Date(oneMonthAgo.getFullYear(), oneMonthAgo.getMonth(), 10),
-      type: "expense"
+      type: "expense",
+      category:"transportation"
     }
   ];
 }

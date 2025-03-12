@@ -110,13 +110,42 @@ export const updateTransaction = async (id: string, transaction: TransactionForm
 
 export const deleteTransaction = async (id: string): Promise<void> => {
   try {
+    if (!id) {
+      console.error('Attempted to delete a transaction without an ID');
+      throw new Error('Transaction ID is required');
+    }
+    
+    console.log(`Attempting to delete transaction with ID: ${id}`);
     const response = await fetch(`${API_URL}/transactions/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
+    // Log the entire response for debugging
+    console.log(`Delete response status: ${response.status}`);
+    
+    let errorData = {};
     if (!response.ok) {
-      throw new Error('Failed to delete transaction');
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        // Response might not contain JSON
+      }
+      console.error('Server error response:', errorData);
+      throw new Error(`Failed to delete transaction: ${response.status}`);
     }
+    
+    // Always update localStorage to keep it in sync
+    const savedTransactions = localStorage.getItem('transactions');
+    if (savedTransactions) {
+      const transactions = JSON.parse(savedTransactions);
+      const filteredTransactions = transactions.filter((t: any) => t.id !== id);
+      localStorage.setItem('transactions', JSON.stringify(filteredTransactions));
+    }
+    
+    console.log('Transaction successfully deleted');
   } catch (error) {
     console.error('Error deleting transaction:', error);
     
@@ -127,5 +156,28 @@ export const deleteTransaction = async (id: string): Promise<void> => {
       const filteredTransactions = transactions.filter((t: any) => t.id !== id);
       localStorage.setItem('transactions', JSON.stringify(filteredTransactions));
     }
+    
+    throw error; // Re-throw to allow the caller to handle it
+  }
+};
+
+export const createTransaction = async (transactionData: TransactionFormData) => {
+  try {
+    const response = await fetch('/api/transactions', { // Adjust the endpoint
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(transactionData), // Make sure category is here
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create transaction');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating transaction:', error);
+    throw error;
   }
 };

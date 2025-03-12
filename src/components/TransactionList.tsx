@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { Edit, Trash2, Search, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
@@ -20,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Transaction } from '@/types/transaction';
+import { Transaction, TransactionCategory } from '@/types/transaction';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +39,7 @@ interface TransactionListProps {
   onDelete: (id: string) => void;
 }
 
-type SortField = 'date' | 'amount' | 'description';
+type SortField = 'date' | 'amount' | 'description' | 'category';
 type SortDirection = 'asc' | 'desc';
 
 export function TransactionList({ transactions, onEdit, onDelete }: TransactionListProps) {
@@ -161,6 +160,12 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                     Amount {renderSortIndicator('amount')}
                   </div>
                 </TableHead>
+                 {/* Add Category Header */}
+                <TableHead className="cursor-pointer" onClick={() => handleSort('category')}>
+                  <div className="flex items-center">
+                    Category {renderSortIndicator('category')}
+                  </div>
+                </TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -193,6 +198,8 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                     </TableCell>
+                     {/* Add Category Cell */}
+                    <TableCell>{transaction.category}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end space-x-1">
                         <Button

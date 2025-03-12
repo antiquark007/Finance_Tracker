@@ -32,6 +32,9 @@ import {
 } from '@/components/ui/select';
 import { Transaction, TransactionFormData } from '@/types/transaction';
 
+//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+//import { TransactionCategory } from '@/types/transaction';
+
 const formSchema = z.object({
   amount: z.coerce.number().min(0.01, {
     message: 'Amount must be greater than 0',
@@ -46,6 +49,9 @@ const formSchema = z.object({
   }),
   type: z.enum(['income', 'expense'], {
     required_error: 'Type is required',
+  }),
+  category: z.string().min(1, {
+    message: 'Category is required',
   }),
 });
 
@@ -68,17 +74,19 @@ export function TransactionForm({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
       ? {
-          amount: initialData.amount,
-          description: initialData.description,
-          date: initialData.date,
-          type: initialData.type,
-        }
+        amount: initialData.amount,
+        description: initialData.description,
+        date: initialData.date,
+        type: initialData.type,
+        category:initialData.type,
+        
+      }
       : {
-          amount: 0,
-          description: '',
-          date: new Date(),
-          type: 'expense' as const,
-        },
+        amount: 0,
+        category: 'uncategorized',
+        date: new Date(),
+        type: 'expense' as const,
+      },
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -138,11 +146,11 @@ export function TransactionForm({
               <FormItem>
                 <FormLabel>Amount</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
+                  <Input
+                    type="number"
                     step="0.01"
-                    placeholder="0.00" 
-                    {...field} 
+                    placeholder="0.00"
+                    {...field}
                     onChange={(e) => {
                       // Parse the value as a number with up to 2 decimal places
                       const value = parseFloat(parseFloat(e.target.value).toFixed(2));
@@ -165,6 +173,37 @@ export function TransactionForm({
               <FormControl>
                 <Input placeholder="Enter a description" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                  <SelectItem value="food">Food</SelectItem>
+                  <SelectItem value="transportation">Transportation</SelectItem>
+                  <SelectItem value="housing">Housing</SelectItem>
+                  <SelectItem value="utilities">Utilities</SelectItem>
+                  <SelectItem value="entertainment">Entertainment</SelectItem>
+                  <SelectItem value="healthcare">Healthcare</SelectItem>
+                  <SelectItem value="shopping">Shopping</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                  <SelectItem value="freelance">Freelance</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -207,14 +246,15 @@ export function TransactionForm({
               </Popover>
               <FormMessage />
             </FormItem>
+
           )}
         />
 
         <div className="flex justify-end space-x-2">
           {onCancel && (
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={onCancel}
               disabled={isPending}
             >

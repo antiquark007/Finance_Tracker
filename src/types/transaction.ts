@@ -1,12 +1,26 @@
 
 export type TransactionType = 'income' | 'expense';
 
+
+export type TransactionCategory =
+  | 'uncategorized'
+  | 'food'
+  | 'transportation'
+  | 'housing'
+  | 'utilities'
+  | 'entertainment'
+  | 'healthcare'
+  | 'shopping'
+  | 'salary'
+  | 'freelance'
+  | 'other';
 export interface Transaction {
   id: string;
   amount: number;
   description: string;
   date: Date;
   type: TransactionType;
+  category: TransactionCategory; 
 }
 
 export interface TransactionFormData {
@@ -14,4 +28,5 @@ export interface TransactionFormData {
   description: string;
   date: Date;
   type: TransactionType;
+  category: TransactionCategory; 
 }

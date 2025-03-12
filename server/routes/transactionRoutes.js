@@ -1,11 +1,11 @@
 const express = require('express');
+const router = express.Router();
 const transactionController = require('../controllers/transactionController');
 
-const router = express.Router();
-
+// Make sure this DELETE route is defined correctly
+router.delete('/:id', transactionController.deleteTransaction);
 router.get('/', transactionController.getAllTransactions);
 router.post('/', transactionController.createTransaction);
 router.put('/:id', transactionController.updateTransaction);
-router.delete('/:id', transactionController.deleteTransaction);
 
 module.exports = router;
