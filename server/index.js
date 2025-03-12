@@ -7,8 +7,9 @@ const transactionRoutes = require('./routes/transactionRoutes');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://vedp5585:hacker69@cluster0.yx9ik.mongodb.net/finance-tracker?retryWrites=true&w=majority&appName=Cluster0';
+
+const PORT = process.env.PORT || 3000;//this will be updated with env file just for test 
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
 // Middleware
 app.use(cors());
