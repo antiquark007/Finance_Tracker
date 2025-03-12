@@ -21,7 +21,7 @@ exports.createTransaction = async (req, res) => {
       description,
       date: new Date(date),
       type,
-      category,
+      //category,
     });
 
     res.status(201).json({ message: 'Transaction created', id: result.insertedId });
@@ -45,7 +45,7 @@ exports.updateTransaction = async (req, res) => {
           description,
           date: new Date(date),
           type,
-          category,
+          //category,
         },
       }
     );
