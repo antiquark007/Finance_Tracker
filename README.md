@@ -5,6 +5,14 @@ A web application for tracking personal finances with React, shadcn/ui, and Mong
 
 ## Setup Instructions
 
+## run entire setup
+```
+npm i
+npm run dev
+```
+
+or
+
 ### Frontend
 1. Install dependencies:
 ```
