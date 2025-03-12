@@ -1,8 +1,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Transaction, TransactionFormData } from '@/types/transaction';
-import { v4 as uuidv4 } from 'uuid';
 import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
+import { 
+  fetchTransactions as apiFetchTransactions,
+  addTransaction as apiAddTransaction,
+  updateTransaction as apiUpdateTransaction,
+  deleteTransaction as apiDeleteTransaction
+} from '@/api/transactionApi';
 
 interface TransactionContextType {
   transactions: Transaction[];
@@ -26,63 +32,70 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load transactions from localStorage on initial render
+  // Load transactions from API on initial render
   useEffect(() => {
-    try {
-      const savedTransactions = localStorage.getItem('transactions');
-      if (savedTransactions) {
-        // Convert string dates back to Date objects
-        const parsedTransactions = JSON.parse(savedTransactions).map((transaction: any) => ({
-          ...transaction,
-          date: new Date(transaction.date),
-        }));
-        setTransactions(parsedTransactions);
-      } else {
-        // Set sample data if nothing exists
+    const loadTransactions = async () => {
+      try {
+        const fetchedTransactions = await apiFetchTransactions();
+        if (fetchedTransactions.length > 0) {
+          setTransactions(fetchedTransactions);
+        } else {
+          // Set sample data if nothing exists
+          setTransactions(getSampleTransactions());
+        }
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+        toast.error("Couldn't load your transactions");
+        // Set sample data if API fails
         setTransactions(getSampleTransactions());
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading transactions:', error);
-      toast.error("Couldn't load your transactions");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Save transactions to localStorage whenever they change
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-    }
-  }, [transactions, isLoading]);
-
-  // Add a new transaction
-  const addTransaction = (transaction: TransactionFormData) => {
-    const newTransaction: Transaction = {
-      id: uuidv4(),
-      ...transaction,
     };
 
-    setTransactions((prev) => [newTransaction, ...prev]);
-    toast.success("Transaction added");
+    loadTransactions();
+  }, []);
+
+  // Add a new transaction
+  const addTransaction = async (transaction: TransactionFormData) => {
+    try {
+      const newTransaction = await apiAddTransaction(transaction);
+      setTransactions((prev) => [newTransaction, ...prev]);
+      toast.success("Transaction added");
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      toast.error("Failed to add transaction");
+    }
   };
 
   // Edit an existing transaction
-  const editTransaction = (id: string, transactionData: TransactionFormData) => {
-    setTransactions((prev) =>
-      prev.map((transaction) =>
-        transaction.id === id
-          ? { ...transaction, ...transactionData }
-          : transaction
-      )
-    );
-    toast.success("Transaction updated");
+  const editTransaction = async (id: string, transactionData: TransactionFormData) => {
+    try {
+      const updatedTransaction = await apiUpdateTransaction(id, transactionData);
+      setTransactions((prev) =>
+        prev.map((transaction) =>
+          transaction.id === id
+            ? updatedTransaction
+            : transaction
+        )
+      );
+      toast.success("Transaction updated");
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      toast.error("Failed to update transaction");
+    }
   };
 
   // Delete a transaction
-  const deleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
-    toast.success("Transaction deleted");
+  const deleteTransaction = async (id: string) => {
+    try {
+      await apiDeleteTransaction(id);
+      setTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
+      toast.success("Transaction deleted");
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast.error("Failed to delete transaction");
+    }
   };
 
   const value = {
