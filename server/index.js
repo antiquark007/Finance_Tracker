@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const mongoose =require('mongoose')
 const cors = require('cors');
 const dotenv = require('dotenv');
 const transactionRoutes = require('./routes/transactionRoutes');
@@ -16,13 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-MongoClient.connect(MONGODB_URI)
-  .then(client => {
-    console.log('Connected to MongoDB');
-    app.use((req, res, next) => {
-      req.db = client.db();
-      next();
-    });
+mongoose.connect(MONGODB_URI, {
+})
+  .then(() => {
+    console.log('Connected to MongoDB with Mongoose');
 
     // Routes
     app.use('/api/transactions', transactionRoutes);
