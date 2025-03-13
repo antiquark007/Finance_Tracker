@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { Edit, Trash2, Search, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import { Edit, Trash2, Search, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Transaction, TransactionCategory } from '@/types/transaction';
+import { Transaction } from '@/types/transaction';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,26 +39,11 @@ interface TransactionListProps {
   onDelete: (id: string) => void;
 }
 
-type SortField = 'date' | 'amount' | 'description' | 'category';
-type SortDirection = 'asc' | 'desc';
-
 export function TransactionList({ transactions, onEdit, onDelete }: TransactionListProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<SortField>('date');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  // Handle sorting
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  // Filter and sort transactions
-  const filteredAndSortedTransactions = useMemo(() => {
+  // Filter transactions
+  const filteredTransactions = useMemo(() => {
     return [...transactions]
       .filter((transaction) => {
         const searchTermLower = searchTerm.toLowerCase();
@@ -66,38 +51,18 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
           transaction.description.toLowerCase().includes(searchTermLower) ||
           transaction.amount.toString().includes(searchTermLower) ||
           transaction.type.toLowerCase().includes(searchTermLower) ||
-          format(transaction.date, 'PPP').toLowerCase().includes(searchTermLower)
+          format(transaction.date, 'PPP').toLowerCase().includes(searchTermLower) ||
+          (transaction.category && transaction.category.toLowerCase().includes(searchTermLower))
         );
-      })
-      .sort((a, b) => {
-        if (sortField === 'date') {
-          return sortDirection === 'asc'
-            ? a.date.getTime() - b.date.getTime()
-            : b.date.getTime() - a.date.getTime();
-        } else if (sortField === 'amount') {
-          return sortDirection === 'asc'
-            ? a.amount - b.amount
-            : b.amount - a.amount;
-        } else {
-          // description
-          return sortDirection === 'asc'
-            ? a.description.localeCompare(b.description)
-            : b.description.localeCompare(a.description);
-        }
       });
-  }, [transactions, searchTerm, sortField, sortDirection]);
+  }, [transactions, searchTerm]);
 
-  // Function to render sort indicator
-  const renderSortIndicator = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />;
-  };
-
-  // Format currency
+  // Format currency as Indian Rupees
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
+      maximumFractionDigits: 0, // Optional: removes decimal places for whole rupee amounts
     }).format(amount);
   };
 
@@ -136,48 +101,22 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('date')}
-                >
-                  <div className="flex items-center">
-                    Date {renderSortIndicator('date')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer" 
-                  onClick={() => handleSort('description')}
-                >
-                  <div className="flex items-center">
-                    Description {renderSortIndicator('description')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer text-right"
-                  onClick={() => handleSort('amount')}
-                >
-                  <div className="flex items-center justify-end">
-                    Amount {renderSortIndicator('amount')}
-                  </div>
-                </TableHead>
-                 {/* Add Category Header */}
-                <TableHead className="cursor-pointer" onClick={() => handleSort('category')}>
-                  <div className="flex items-center">
-                    Category {renderSortIndicator('category')}
-                  </div>
-                </TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAndSortedTransactions.length === 0 ? (
+              {filteredTransactions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                     No transactions found.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSortedTransactions.map((transaction) => (
+                filteredTransactions.map((transaction) => (
                   <TableRow key={transaction.id}>
                     <TableCell>{format(transaction.date, 'MMM dd, yyyy')}</TableCell>
                     <TableCell>
@@ -193,13 +132,11 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                         </Badge>
                       </div>
                     </TableCell>
-                    <TableCell className={`text-right font-medium ${
-                      transaction.type === 'income' ? 'text-finance-income' : 'text-finance-expense'
-                    }`}>
+                    <TableCell className={`text-right font-medium ${transaction.type === 'income' ? 'text-finance-income' : 'text-finance-expense'
+                      }`}>
                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                     </TableCell>
-                     {/* Add Category Cell */}
-                    <TableCell>{transaction.category}</TableCell>
+                    <TableCell>{transaction.category || 'Uncategorized'}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end space-x-1">
                         <Button
@@ -230,8 +167,21 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction 
-                                onClick={() => onDelete(transaction.id)}
+                              <AlertDialogAction
+                                onClick={(e) => {
+                                  e.preventDefault();
+
+                                  // MongoID usually stored as _id in MongoDB documents from API
+                                  const _id = transaction._id;
+
+                                  if (!_id) {
+                                    console.error("Cannot delete transaction: Missing ID");
+                                    return;
+                                  }
+
+                                  console.log("Deleting transaction with ID:", _id);
+                                  onDelete(_id);
+                                }}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
@@ -249,7 +199,7 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
         </div>
       </CardContent>
       <CardFooter className="flex justify-between text-sm text-muted-foreground">
-        <div>Showing {filteredAndSortedTransactions.length} of {transactions.length} transactions</div>
+        <div>Showing {filteredTransactions.length} of {transactions.length} transactions</div>
       </CardFooter>
     </Card>
   );

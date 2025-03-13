@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true }, // Add client-side ID
+  //id: { type: String, required: true, unique: true }, // Add client-side ID
   amount: { type: Number, required: true },
   description: { type: String, required: true },
   date: { type: Date, required: true },

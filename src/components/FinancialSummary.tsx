@@ -3,8 +3,6 @@ import { ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Transaction, TransactionCategory } from '@/types/transaction';
 
@@ -104,14 +102,14 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(Math.abs(amount));
   };
-
+  
   // Format percentage
   const formatPercentage = (value: number) => {
     return `${value > 0 ? '+' : ''}${Math.round(value)}%`;
@@ -242,23 +240,6 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Category-wise Expenses */}
-      <Card className="mt-8 animate-fade-in">
-        <CardHeader>
-          <CardTitle>Category-wise Expenses ({getCurrentMonthName()})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(summary.categoryExpenses).map(([category, amount]) => (
-              <div key={category} className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-800">
-                <span className="text-sm font-medium capitalize">{category}</span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">{formatCurrency(amount)}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

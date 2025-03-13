@@ -1,4 +1,4 @@
-
+//mainly to display the toast msg
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Transaction, TransactionFormData } from '@/types/transaction';
 import { toast } from "sonner";
@@ -13,8 +13,8 @@ import {
 interface TransactionContextType {
   transactions: Transaction[];
   addTransaction: (transaction: TransactionFormData) => void;
-  editTransaction: (id: string, transaction: TransactionFormData) => void;
-  deleteTransaction: (id: string) => void;
+  editTransaction: (_id: string, transaction: TransactionFormData) => void;
+  deleteTransaction: (_id: string) => void;
   isLoading: boolean;
 }
 
@@ -69,12 +69,12 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   };
 
   // Edit an existing transaction
-  const editTransaction = async (id: string, transactionData: TransactionFormData) => {
+  const editTransaction = async (_id: string, transactionData: TransactionFormData) => {
     try {
-      const updatedTransaction = await apiUpdateTransaction(id, transactionData);
+      const updatedTransaction = await apiUpdateTransaction(_id, transactionData);
       setTransactions((prev) =>
         prev.map((transaction) =>
-          transaction.id === id
+          transaction.id === _id
             ? updatedTransaction
             : transaction
         )
@@ -87,10 +87,17 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   };
 
   // Delete a transaction
-  const deleteTransaction = async (id: string) => {
+  const deleteTransaction = async (_id: string) => {
+    if (!_id) {
+      console.error('Cannot delete transaction: Missing ID');
+      toast.error("Failed to delete transaction: Missing ID");
+      return;
+    }
+    
     try {
-      await apiDeleteTransaction(id);
-      setTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
+      await apiDeleteTransaction(_id);
+      // Update both id and _id matches to ensure everything gets filtered properly
+      setTransactions((prev) => prev.filter((t) => t._id !== _id && t._id !== _id));//will fix later
       toast.success("Transaction deleted");
     } catch (error) {
       console.error('Error deleting transaction:', error);
@@ -121,68 +128,12 @@ function getSampleTransactions(): Transaction[] {
 
   return [
     {
-      id: uuidv4(),
+      _id: uuidv4(),
       amount: 2500,
       description: "Salary",
       date: new Date(today.getFullYear(), today.getMonth(), 5),
       type: "income",
       category:"salary"
     },
-    {
-      id: uuidv4(),
-      amount: 120.50,
-      description: "Grocery shopping",
-      date: new Date(today.getFullYear(), today.getMonth(), 12),
-      type: "expense",
-      category:"food"
-    },
-    {
-      id: uuidv4(),
-      amount: 45.99,
-      description: "Internet bill",
-      date: new Date(today.getFullYear(), today.getMonth(), 15),
-      type: "expense",
-      category:"entertainment"
-    },
-    {
-      id: uuidv4(),
-      amount: 800,
-      description: "Rent",
-      date: new Date(today.getFullYear(), today.getMonth(), 1),
-      type: "expense",
-      category:"housing"
-    },
-    {
-      id: uuidv4(),
-      amount: 56.28,
-      description: "Gas",
-      date: new Date(today.getFullYear(), today.getMonth(), 18),
-      type: "expense",
-      category:"transportation"
-    },
-    {
-      id: uuidv4(),
-      amount: 500,
-      description: "Freelance work",
-      date: new Date(today.getFullYear(), today.getMonth(), 22),
-      type: "income",
-      category:"freelance"
-    },
-    {
-      id: uuidv4(),
-      amount: 2500,
-      description: "Salary",
-      date: new Date(oneMonthAgo.getFullYear(), oneMonthAgo.getMonth(), 5),
-      type: "income",
-      category:"salary"
-    },
-    {
-      id: uuidv4(),
-      amount: 350,
-      description: "Car repair",
-      date: new Date(oneMonthAgo.getFullYear(), oneMonthAgo.getMonth(), 10),
-      type: "expense",
-      category:"transportation"
-    }
   ];
 }

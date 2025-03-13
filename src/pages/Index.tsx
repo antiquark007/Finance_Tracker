@@ -10,11 +10,19 @@ import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { CategoryMonthExpenses } from '@/components/CategoryMonthExpenses';
 
 function Dashboard() {
   const { transactions, addTransaction, editTransaction, deleteTransaction, isLoading } = useTransactions();
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [greeting, setGreeting] = useState('');
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -61,24 +69,31 @@ function Dashboard() {
           <p className="text-muted-foreground mt-1">Here's your financial overview for today</p>
         </motion.div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end p-4">
           <TransactionDialog
             onSubmit={handleAddTransaction}
             title="Add New Transaction"
             description="Add a new income or expense transaction"
             submitLabel="Add Transaction"
             trigger={
-              <Button className="gap-1 shadow-md hover:shadow-lg transition-all">
-                <Plus className="h-4 w-4" /> New Transaction
+              <Button className="gap-4  shadow-md hover:shadow-lg transition-all">
+                <Plus className="h-1 w-4" /> New Transaction
               </Button>
             }
           />
         </div>
 
+        <FinancialSummary transactions={transactions} />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-          <FinancialSummary transactions={transactions} />
-          <CategoryPieChart transactions={transactions} />
-          <MonthlyChart transactions={transactions} />
+        <CategoryPieChart transactions={transactions} />
+        
+        <MonthlyChart transactions={transactions} />
+        {/* Pass formatCurrency prop to CategoryMonthExpenses */}
+        <CategoryMonthExpenses 
+          transactions={transactions} 
+          formatCurrency={formatCurrency}
+        />
           <TransactionList transactions={transactions} onEdit={openEditDialog} onDelete={handleDeleteTransaction} />
         </div>
       </div>
