@@ -163,12 +163,18 @@ export const deleteTransaction = async (id: string): Promise<void> => {
 
 export const createTransaction = async (transactionData: TransactionFormData) => {
   try {
-    const response = await fetch('/api/transactions', { // Adjust the endpoint
+    // Generate ID for the new transaction
+    const newTransaction = {
+      id: uuidv4(),
+      ...transactionData
+    };
+    
+    const response = await fetch(`${API_URL}/transactions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(transactionData), // Make sure category is here
+      body: JSON.stringify(newTransaction),
     });
 
     if (!response.ok) {
