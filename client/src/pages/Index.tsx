@@ -89,7 +89,6 @@ function Dashboard() {
         <CategoryPieChart transactions={transactions} />
         
         <MonthlyChart transactions={transactions} />
-        {/* Pass formatCurrency prop to CategoryMonthExpenses */}
         <CategoryMonthExpenses 
           transactions={transactions} 
           formatCurrency={formatCurrency}

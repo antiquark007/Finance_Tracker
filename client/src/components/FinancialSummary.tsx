@@ -16,19 +16,16 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    // Filter transactions for current month
     const currentMonthTransactions = transactions.filter(
       (t) => t.date.getMonth() === currentMonth && t.date.getFullYear() === currentYear
     );
 
-    // Filter transactions for previous month
     const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     const previousMonthTransactions = transactions.filter(
       (t) => t.date.getMonth() === previousMonth && t.date.getFullYear() === previousYear
     );
 
-    // Calculate current month totals
     const currentIncome = currentMonthTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
@@ -39,7 +36,6 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
 
     const currentBalance = currentIncome - currentExpense;
 
-    // Calculate previous month totals
     const previousIncome = previousMonthTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
@@ -50,7 +46,6 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
 
     const previousBalance = previousIncome - previousExpense;
 
-    // Calculate percentage changes
     const incomeChange = previousIncome === 0 ? 100 : ((currentIncome - previousIncome) / previousIncome) * 100;
 
     const expenseChange = previousExpense === 0 ? 100 : ((currentExpense - previousExpense) / previousExpense) * 100;
@@ -59,7 +54,6 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
       ? 100
       : ((currentBalance - previousBalance) / Math.abs(previousBalance)) * 100;
 
-    // Calculate category-wise expenses for the current month
     const categoryExpenses: { [key in TransactionCategory]: number } = {
       uncategorized: 0,
       food: 0,
@@ -96,11 +90,10 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
         previous: previousBalance,
         change: balanceChange,
       },
-      categoryExpenses: categoryExpenses, // Add category expenses
+      categoryExpenses: categoryExpenses,
     };
   }, [transactions]);
 
-  // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -110,12 +103,10 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
     }).format(Math.abs(amount));
   };
   
-  // Format percentage
   const formatPercentage = (value: number) => {
     return `${value > 0 ? '+' : ''}${Math.round(value)}%`;
   };
 
-  // Get month name
   const getCurrentMonthName = () => {
     return new Date().toLocaleString('default', { month: 'long' });
   };

@@ -1,7 +1,6 @@
 import { Transaction, TransactionFormData } from '@/types/transaction';
-import { v4 as uuidv4 } from 'uuid';
 
-const API_URL = 'https://finance-tracker-backend-nvog.onrender.com';
+const API_URL = 'http://localhost:3000/api';
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
   const response = await fetch(`${API_URL}/transactions`);

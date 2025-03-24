@@ -1,4 +1,3 @@
-// filepath: src/components/CategoryPieChart.tsx
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,9 +1,6 @@
 const Transaction = require('../models/transaction');
 
-/**
- * Get all transactions
- * @route GET /api/transactions
- */
+
 exports.getAllTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find().sort({ date: -1 });
@@ -14,10 +11,7 @@ exports.getAllTransactions = async (req, res) => {
   }
 };
 
-/**
- * Create a new transaction
- * @route POST /api/transactions
- */
+
 exports.createTransaction = async (req, res) => {
   try {
     const transaction = new Transaction(req.body);
@@ -30,10 +24,7 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-/**
- * Update an existing transaction
- * @route PUT /api/transactions/:id
- */
+
 exports.updateTransaction = async (req, res) => {
   try {
     const { _id } = req.params;
@@ -59,10 +50,7 @@ exports.updateTransaction = async (req, res) => {
   }
 };
 
-/**
- * Delete a transaction
- * @route DELETE /api/transactions/:id
- */
+
 exports.deleteTransaction = async (req, res) => {
   try {
     const { _id } = req.params;
