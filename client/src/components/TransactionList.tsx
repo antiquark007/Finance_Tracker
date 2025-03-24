@@ -117,7 +117,7 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                 </TableRow>
               ) : (
                 filteredTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
+                  <TableRow key={transaction._id}>
                     <TableCell>{format(transaction.date, 'MMM dd, yyyy')}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -169,9 +169,8 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={(e) => {
-                                  e.preventDefault();
+                                  //e.preventDefault();
 
-                                  // MongoID usually stored as _id in MongoDB documents from API
                                   const _id = transaction._id;
 
                                   if (!_id) {

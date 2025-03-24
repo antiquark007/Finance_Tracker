@@ -14,9 +14,8 @@ export type TransactionCategory =
   | 'salary'
   | 'freelance'
   | 'other';
-export interface Transaction {
-  id?: string;       // Make id optional if it might not always be present
-  _id?: string;      // Add _id for MongoDB responses
+export interface Transaction { 
+  _id: string;      
   amount: number;
   description: string;
   date: Date;

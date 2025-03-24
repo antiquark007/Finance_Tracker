@@ -37,13 +37,13 @@ function Dashboard() {
 
   const handleEditTransaction = (data: TransactionFormData) => {
     if (selectedTransaction) {
-      editTransaction(selectedTransaction.id, data);
+      editTransaction(selectedTransaction._id, data);
       setSelectedTransaction(null);
     }
   };
 
-  const handleDeleteTransaction = (id: string) => {
-    deleteTransaction(id);
+  const handleDeleteTransaction = (_id: string) => {
+    deleteTransaction(_id);
   };
 
   const openEditDialog = (transaction: Transaction) => {
