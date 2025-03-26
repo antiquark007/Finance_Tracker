@@ -3,7 +3,7 @@ const mongoose =require('mongoose')
 const cors = require('cors');
 const dotenv = require('dotenv');
 const transactionRoutes = require('./routes/transactionRoutes');
-
+const userRoutes =require('./routes/userRoutes')
 dotenv.config();
 
 const app = express();
@@ -23,6 +23,7 @@ mongoose.connect(MONGODB_URI, {
 
     // Routes
     app.use('/api/transactions', transactionRoutes);
+    app.use('/api/user', userRoutes);
 
     // Start the server
     app.listen(PORT, () => {

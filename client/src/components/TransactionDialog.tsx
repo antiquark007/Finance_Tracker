@@ -19,6 +19,8 @@ interface TransactionDialogProps {
   title: string;
   description?: string;
   submitLabel: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function TransactionDialog({
@@ -28,23 +30,21 @@ export function TransactionDialog({
   title,
   description,
   submitLabel,
+  open,
+  onOpenChange,
 }: TransactionDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+  const isOpen = open !== undefined ? open : localOpen;
+  const setIsOpen = onOpenChange || setLocalOpen;
 
   const handleSubmit = (data: TransactionFormData) => {
     onSubmit(data);
-    setOpen(false);
+    setIsOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button className="gap-1">
-            <Plus className="h-4 w-4" /> Add Transaction
-          </Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -54,7 +54,7 @@ export function TransactionDialog({
           onSubmit={handleSubmit}
           initialData={transaction}
           submitLabel={submitLabel}
-          onCancel={() => setOpen(false)}
+          onCancel={() => setIsOpen(false)}
         />
       </DialogContent>
     </Dialog>

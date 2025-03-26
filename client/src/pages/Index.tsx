@@ -16,6 +16,7 @@ function Dashboard() {
   const { transactions, addTransaction, editTransaction, deleteTransaction, isLoading } = useTransactions();
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [greeting, setGreeting] = useState('');
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -48,6 +49,8 @@ function Dashboard() {
 
   const openEditDialog = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
+
+    setEditDialogOpen(true);
   };
 
   if (isLoading) {
@@ -69,6 +72,20 @@ function Dashboard() {
           <p className="text-muted-foreground mt-1">Here's your financial overview for today</p>
         </motion.div>
 
+        {selectedTransaction && (
+          <TransactionDialog
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            transaction={selectedTransaction}
+            onSubmit={(data) => {
+              handleEditTransaction(data);
+              setEditDialogOpen(false);
+            }}
+            title="Edit Transaction"
+            description="Update this transaction"
+            submitLabel="Save Changes"
+          />
+        )}
         <div className="flex justify-end p-4">
           <TransactionDialog
             onSubmit={handleAddTransaction}
@@ -84,15 +101,15 @@ function Dashboard() {
         </div>
 
         <FinancialSummary transactions={transactions} />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-        <CategoryPieChart transactions={transactions} />
-        
-        <MonthlyChart transactions={transactions} />
-        <CategoryMonthExpenses 
-          transactions={transactions} 
-          formatCurrency={formatCurrency}
-        />
+          <CategoryPieChart transactions={transactions} />
+
+          <MonthlyChart transactions={transactions} />
+          <CategoryMonthExpenses
+            transactions={transactions}
+            formatCurrency={formatCurrency}
+          />
           <TransactionList transactions={transactions} onEdit={openEditDialog} onDelete={handleDeleteTransaction} />
         </div>
       </div>
