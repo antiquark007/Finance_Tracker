@@ -67,7 +67,6 @@ export const updateTransaction = async (_id: string, transaction: TransactionFor
   };
 };
 
-// Replace server-side code with proper frontend client function
 export const deleteTransaction = async (_id: string): Promise<void> => {
   if (!_id) {
     throw new Error('Transaction ID is required');

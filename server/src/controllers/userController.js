@@ -25,16 +25,16 @@ exports.registerUser = async (req, res) => {
       occupation,
       email,
       password: hashedPassword,
-      token:generateJWTtoken(user._id),
     });
 
     if (user) {
+
       return res.status(201).json({
         _id: user.id,
         name: user.name,
         occupation: user.occupation,
         email: user.email,
-        message: 'Registered successfully',
+        password:hashedPassword,
       });
     } else {
       return res.status(400).json({ message: 'Invalid user data' });

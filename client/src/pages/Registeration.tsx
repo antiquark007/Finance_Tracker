@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
+import { registerUser } from '@/api/userApi';
 
 function Registration() {
   const [name, setName] = useState('');
@@ -10,15 +11,26 @@ function Registration() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    // Add registration logic here
-    console.log('Registering with:', { name, occupation, email, password });
+    try {
+      const userData = { name, occupation, email, password };
+      const response = await registerUser(userData);
+      setSuccess('Registration successful!');
+      setError('');
+      //console.log('Registered user:', response);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+      setSuccess('');
+      console.error('Error registering user:', err);
+    }
   };
 
   return (

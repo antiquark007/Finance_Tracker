@@ -1,15 +1,15 @@
 const express = require('express');
 const mongoose =require('mongoose')
 const cors = require('cors');
-const dotenv = require('dotenv');
-const transactionRoutes = require('./routes/transactionRoutes');
-const userRoutes =require('./routes/userRoutes')
-dotenv.config();
+const dotenv = require('dotenv').config();
+const transactionRoutes = require('./src/routes/transactionRoutes');
+const userRoutes =require('./src/routes/userRoutes');
+const {protect}=require('./src/middleware/authMiddleware')
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;//this will be updated with env file just for test
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI || "";
 
 // Middleware
 app.use(cors());

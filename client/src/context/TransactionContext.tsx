@@ -1,4 +1,3 @@
-//mainly to display the toast msg
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Transaction, TransactionFormData } from '@/types/transaction';
 import { toast } from "sonner";
@@ -74,7 +73,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
       const updatedTransaction = await apiUpdateTransaction(_id, transactionData);
       setTransactions((prev) =>
         prev.map((transaction) =>
-          transaction.id === _id
+          transaction._id === _id
             ? updatedTransaction
             : transaction
         )
