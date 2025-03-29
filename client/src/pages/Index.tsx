@@ -9,7 +9,6 @@ import { CategoryPieChart } from '@/components/CategoryPieChart';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
 import { CategoryMonthExpenses } from '@/components/CategoryMonthExpenses';
 
 function Dashboard() {

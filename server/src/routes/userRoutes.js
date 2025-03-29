@@ -5,7 +5,7 @@ const {protect}=require('../middleware/authMiddleware');
 
 
 router.get('/current',protect,userController.getCurrentUser );
-router.get('/login',userController.loginUser );
+router.post('/login',userController.loginUser );
 router.post('/register',userController.registerUser)
 
 module.exports = router;

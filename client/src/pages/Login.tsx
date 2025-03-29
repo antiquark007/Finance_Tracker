@@ -2,16 +2,28 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { loginUser } from '@/api/userApi';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add login logic here
-    console.log('Logging in with:', { email, password });
+    try {
+      const userData = { email, password };
+      const response = await loginUser(userData);
+      localStorage.setItem("token", response.token);      
+      toast.success('Login Successful!', { position: 'top-right', autoClose: 3000 });
+      navigate('/homepage'); 
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
+      toast.error(errorMessage, { position: 'top-right', autoClose: 3000 });
+      console.error('Error during login:', error);
+    }
   };
 
   return (

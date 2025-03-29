@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { registerUser } from '@/api/userApi';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Registration() {
   const [name, setName] = useState('');
@@ -13,6 +15,7 @@ function Registration() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,12 +27,13 @@ function Registration() {
       const userData = { name, occupation, email, password };
       const response = await registerUser(userData);
       setSuccess('Registration successful!');
+      toast.success('Registration Successful!', { position: 'top-right', autoClose: 3000 });
       setError('');
-      //console.log('Registered user:', response);
+      navigate('/'); // Navigate to the dashboard after successful registration
     } catch (err: any) {
       setError(err.message || 'Registration failed');
       setSuccess('');
-      console.error('Error registering user:', err);
+      toast.error('Registration Failed. Please try again.', { position: 'top-right', autoClose: 3000 });
     }
   };
 

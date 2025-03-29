@@ -1,5 +1,5 @@
 import axios from "axios";
-import { userRegister } from "@/types/user";
+import { userLogin, userRegister } from "@/types/user";
 
 const API_URL = 'http://localhost:3000/api/user';
 
@@ -8,11 +8,19 @@ export const registerUser = async (userData: userRegister) => {
     const response = await axios.post(`${API_URL}/register`, userData);
     return response.data;
   } catch (error: any) {
-    // Check if the error is due to an existing email
     if (error.response?.status === 400 && error.response?.data?.message === "User already exists") {
-      alert("The email already exists")
+      alert("The email already exists");
       throw new Error("This email is already registered. Please use a different email.");
     }
     throw new Error(error.response?.data?.message || "Registration failed");
+  }
+};
+
+export const loginUser = async (userData: userLogin) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, userData); // Send POST request to login endpoint
+    return response.data; // Return the response data (e.g., user info and token)
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Login failed"); // Handle errors
   }
 };
