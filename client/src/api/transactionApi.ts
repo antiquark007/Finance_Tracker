@@ -1,85 +1,77 @@
-import { Transaction, TransactionFormData } from '@/types/transaction';
+import axios from "axios";
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = "http://localhost:3000/api/transactions";
 
-export const fetchTransactions = async (): Promise<Transaction[]> => {
-  const response = await fetch(`${API_URL}/transactions`);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch transactions: ${response.status}`);
-  }
-  
-  const data = await response.json();
-  
-  return data.map((transaction: any) => ({
-    ...transaction,
-    date: new Date(transaction.date),
-  }));
-};
-
-export const addTransaction = async (transaction: TransactionFormData): Promise<Transaction> => {
-  const newTransaction = {
-    ...transaction
-  };
-
-  const response = await fetch(`${API_URL}/transactions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(newTransaction),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to add transaction: ${response.status}`);
-  }
-
-  const result = await response.json();
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
   return {
-    ...result,
-    date: new Date(result.date)
-  };
-};
-
-export const updateTransaction = async (_id: string, transaction: TransactionFormData): Promise<Transaction> => {
-  if (!_id) throw new Error('Transaction ID is required');
-  
-  const updatedTransaction = {
-    ...transaction
-  };
-
-  const response = await fetch(`${API_URL}/transactions/${_id}`, {
-    method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(updatedTransaction),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update transaction: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return {
-    ...result,
-    date: new Date(result.date)
   };
 };
 
-export const deleteTransaction = async (_id: string): Promise<void> => {
-  if (!_id) {
-    throw new Error('Transaction ID is required');
+export interface TransactionFormData {
+  amount: number;
+  description: string;
+  date: Date | string;
+  category: string;
+}
+
+// Fetch all transactions
+export const fetchTransactions = async () => {
+  try {
+    const response = await axios.get(API_URL, getAuthHeaders());
+    return response.data.map((transaction: any) => ({
+      ...transaction,
+      date: new Date(transaction.date),
+    }));
+  } catch (error: any) {
+    console.error("Error fetching transactions:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch transactions");
   }
-  
-  const response = await fetch(`${API_URL}/transactions/${_id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Failed to delete transaction: ${response.status}`);
+};
+
+export const addTransaction = async (transaction: TransactionFormData) => {
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
+        ...transaction,
+        date: transaction.date instanceof Date ? transaction.date.toISOString() : transaction.date,
+      },
+      getAuthHeaders()
+    );
+    return { ...response.data, date: new Date(response.data.date) };
+  } catch (error: any) {
+    console.error("Error adding transaction:", error);
+    throw new Error(error.response?.data?.message || "Failed to add transaction");
+  }
+};
+
+export const updateTransaction = async (_id: string, transaction: TransactionFormData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/${_id}`,
+      {
+        ...transaction,
+        date: transaction.date instanceof Date ? transaction.date.toISOString() : transaction.date, // Ensure date is sent as ISO string
+      },
+      getAuthHeaders()
+    );
+    // Convert the `date` field back to a Date object
+    return { ...response.data, date: new Date(response.data.date) };
+  } catch (error: any) {
+    console.error("Error updating transaction:", error);
+    throw new Error(error.response?.data?.message || "Failed to update transaction");
+  }
+};
+
+export const deleteTransaction = async (_id: string) => {
+  try {
+    await axios.delete(`${API_URL}/${_id}`, getAuthHeaders());
+  } catch (error: any) {
+    console.error("Error deleting transaction:", error);
+    throw new Error(error.response?.data?.message || "Failed to delete transaction");
   }
 };

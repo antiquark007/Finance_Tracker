@@ -11,9 +11,9 @@ import {
 
 interface TransactionContextType {
   transactions: Transaction[];
-  addTransaction: (transaction: TransactionFormData) => void;
-  editTransaction: (_id: string, transaction: TransactionFormData) => void;
-  deleteTransaction: (_id: string) => void;
+  addTransaction: (transaction: TransactionFormData) => Promise<void>;
+  editTransaction: (_id: string, transaction: TransactionFormData) => Promise<void>;
+  deleteTransaction: (_id: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -31,73 +31,72 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load transactions from API on initial render
-  useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        const fetchedTransactions = await apiFetchTransactions();
-        if (fetchedTransactions.length > 0) {
-          setTransactions(fetchedTransactions);
-        } else {
-          // Set sample data if nothing exists
-          setTransactions(getSampleTransactions());
-        }
-      } catch (error) {
-        console.error('Error loading transactions:', error);
-        toast.error("Couldn't load your transactions");
-        // Set sample data if API fails
-        setTransactions(getSampleTransactions());
-      } finally {
-        setIsLoading(false);
-      }
-    };
+useEffect(() => {
+  const loadTransactions = async () => {
+    try {
+      const fetchedTransactions = await apiFetchTransactions();
 
-    loadTransactions();
-  }, []);
+      const transactionsWithDate = fetchedTransactions.map((transaction) => ({
+        ...transaction,
+        date: new Date(transaction.date),
+      }));
 
-  // Add a new transaction
+      setTransactions(transactionsWithDate);
+    } catch (error) {
+      console.error('Error loading transactions:', error);
+      toast.error("Couldn't load your transactions");
+      setTransactions(getSampleTransactions());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  loadTransactions();
+}, []);
+
   const addTransaction = async (transaction: TransactionFormData) => {
     try {
-      const newTransaction = await apiAddTransaction(transaction);
+      const newTransaction = await apiAddTransaction({
+        ...transaction,
+        date: transaction.date.toISOString(),
+      });
       setTransactions((prev) => [newTransaction, ...prev]);
-      toast.success("Transaction added");
+      toast.success("Transaction added successfully");
     } catch (error) {
       console.error('Error adding transaction:', error);
       toast.error("Failed to add transaction");
     }
   };
 
-  // Edit an existing transaction
   const editTransaction = async (_id: string, transactionData: TransactionFormData) => {
     try {
-      const updatedTransaction = await apiUpdateTransaction(_id, transactionData);
+      const updatedTransaction = await apiUpdateTransaction(_id, {
+        ...transactionData,
+        date: transactionData.date.toISOString(),
+      });
       setTransactions((prev) =>
         prev.map((transaction) =>
-          transaction._id === _id
-            ? updatedTransaction
-            : transaction
+          transaction._id === _id ? updatedTransaction : transaction
         )
       );
-      toast.success("Transaction updated");
+      toast.success("Transaction updated successfully");
     } catch (error) {
       console.error('Error updating transaction:', error);
       toast.error("Failed to update transaction");
     }
   };
 
-  // Delete a transaction
   const deleteTransaction = async (_id: string) => {
     if (!_id) {
       console.error('Cannot delete transaction: Missing ID');
       toast.error("Failed to delete transaction: Missing ID");
       return;
     }
-    
+
     try {
       await apiDeleteTransaction(_id);
-      // Update both id and _id matches to ensure everything gets filtered properly
-      setTransactions((prev) => prev.filter((t) => t._id !== _id && t._id !== _id));//will fix later
-      toast.success("Transaction deleted");
+      setTransactions((prev) => prev.filter((transaction) => transaction._id !== _id));
+      toast.success("Transaction deleted successfully");
     } catch (error) {
       console.error('Error deleting transaction:', error);
       toast.error("Failed to delete transaction");
@@ -119,7 +118,6 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   );
 }
 
-// Sample transaction data for initial state
 function getSampleTransactions(): Transaction[] {
   const today = new Date();
   const oneMonthAgo = new Date();
@@ -132,7 +130,15 @@ function getSampleTransactions(): Transaction[] {
       description: "Salary",
       date: new Date(today.getFullYear(), today.getMonth(), 5),
       type: "income",
-      category:"salary"
+      category: "salary",
+    },
+    {
+      _id: uuidv4(),
+      amount: 500,
+      description: "Groceries",
+      date: new Date(today.getFullYear(), today.getMonth(), 10),
+      type: "expense",
+      category: "food",
     },
   ];
 }

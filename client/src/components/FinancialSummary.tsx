@@ -16,15 +16,23 @@ export function FinancialSummary({ transactions }: FinancialSummaryProps) {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    const currentMonthTransactions = transactions.filter(
-      (t) => t.date.getMonth() === currentMonth && t.date.getFullYear() === currentYear
-    );
+    const currentMonthTransactions = transactions.filter((t) => {
+      const transactionDate = new Date(t.date); // Ensure `date` is a Date object
+      return (
+        transactionDate.getMonth() === currentMonth &&
+        transactionDate.getFullYear() === currentYear
+      );
+    });
 
     const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-    const previousMonthTransactions = transactions.filter(
-      (t) => t.date.getMonth() === previousMonth && t.date.getFullYear() === previousYear
-    );
+    const previousMonthTransactions = transactions.filter((t) => {
+      const transactionDate = new Date(t.date); // Ensure `date` is a Date object
+      return (
+        transactionDate.getMonth() === previousMonth &&
+        transactionDate.getFullYear() === previousYear
+      );
+    });
 
     const currentIncome = currentMonthTransactions
       .filter((t) => t.type === 'income')

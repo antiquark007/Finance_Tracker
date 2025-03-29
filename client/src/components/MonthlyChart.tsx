@@ -52,7 +52,6 @@ export function MonthlyChart({ transactions }: MonthlyChartProps) {
     return monthlyData;
   }, [transactions, selectedYear]);
 
-  // Format currency for tooltip yo yo
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',

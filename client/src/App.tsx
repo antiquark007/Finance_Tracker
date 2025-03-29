@@ -10,7 +10,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Registration from "./pages/Registeration";
 import Dashboard from "./pages/dashboard";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./lib/PrivateRoute";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +28,7 @@ const App = () => (
             path="/homepage"
             element={
               <PrivateRoute>
-                <Index /> {/* Protected component */}
+                <Index />
               </PrivateRoute>
             }
           />

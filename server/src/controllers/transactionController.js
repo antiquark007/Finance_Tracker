@@ -3,24 +3,27 @@ const Transaction = require('../models/transaction');
 
 exports.getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().sort({ date: -1 });
+    const transactions = await Transaction.find({ user: req.user._id }).sort({ date: -1 }); // Filter by user
     return res.status(200).json(transactions);
   } catch (error) {
-    console.error('Error fetching transactions:', error);
-    return res.status(500).json({ message: 'Failed to fetch transactions' });
+    console.error("Error fetching transactions:", error);
+    return res.status(500).json({ message: "Failed to fetch transactions" });
   }
 };
 
 
 exports.createTransaction = async (req, res) => {
   try {
-    const transaction = new Transaction(req.body);
+    const transaction = new Transaction({
+      ...req.body,
+      user: req.user._id, 
+    });
     const savedTransaction = await transaction.save();
-    
+
     return res.status(201).json(savedTransaction);
   } catch (error) {
-    console.error('Error creating transaction:', error);
-    return res.status(500).json({ message: 'Failed to create transaction' });
+    console.error("Error creating transaction:", error);
+    return res.status(500).json({ message: "Failed to create transaction" });
   }
 };
 

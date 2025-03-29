@@ -32,9 +32,6 @@ import {
 } from '@/components/ui/select';
 import { Transaction, TransactionFormData } from '@/types/transaction';
 
-//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-//import { TransactionCategory } from '@/types/transaction';
-
 const formSchema = z.object({
   amount: z.coerce.number().min(0.01, {
     message: 'Amount must be greater than 0',
