@@ -49,6 +49,7 @@
     "concurrently": "^9.1.2",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "finance-tracker-server": "file:..",
     "framer-motion": "^12.5.0",
     "input-otp": "^1.2.4",
     "jwt-decode": "^4.0.0",
