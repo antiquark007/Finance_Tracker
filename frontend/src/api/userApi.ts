@@ -1,7 +1,7 @@
 import axios from "axios";
 import { userLogin, userRegister } from "@/types/user";
 
-const API_URL = 'http://localhost:3000/api/user';
+const API_URL = 'https://finance-tracker-08zz.onrender.com/api/user';
 
 export const registerUser = async (userData: userRegister) => {
   try {

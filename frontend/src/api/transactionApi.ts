@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/transactions";
+const API_URL = "https://finance-tracker-08zz.onrender.com/api/transactions";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");

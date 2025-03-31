@@ -10,7 +10,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = "https://finance-tracker-08zz.onrender.com" || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
 const __filename = fileURLToPath(import.meta.url);
