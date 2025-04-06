@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL||"https://finance-tracker-08zz.onrender.com\api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");

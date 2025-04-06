@@ -37,7 +37,7 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB with Mongoose");
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`https://finance-tracker-08zz.onrender.com`);
     });
   })
   .catch((error) => {
