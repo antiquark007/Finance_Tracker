@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://finance-tracker-08zz.onrender.com/api/transactions";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -21,7 +21,7 @@ export interface TransactionFormData {
 // Fetch all transactions
 export const fetchTransactions = async () => {
   try {
-    const response = await axios.get(API_URL, getAuthHeaders());
+    const response = await axios.get(`${API_URL}/transactions`, getAuthHeaders());
     return response.data.map((transaction: any) => ({
       ...transaction,
       date: new Date(transaction.date),
@@ -35,7 +35,7 @@ export const fetchTransactions = async () => {
 export const addTransaction = async (transaction: TransactionFormData) => {
   try {
     const response = await axios.post(
-      API_URL,
+      `${API_URL}/transactions`,
       {
         ...transaction,
         date: transaction.date instanceof Date ? transaction.date.toISOString() : transaction.date,
