@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon server/index.js",
-    "build":"npm install && npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "nodemon server/index.js"
   },
   "dependencies": {
